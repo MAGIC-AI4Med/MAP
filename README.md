@@ -2,7 +2,7 @@
 
 The official codes for "MAP: A Knowledge-driven Framework for Predicting Single-cell Responses for Unprofiled Drugs".
 
-[BioRxiv]([https://arxiv.org/abs/2502.20301](https://www.biorxiv.org/content/10.64898/2026.02.25.708091v1))
+[BioRxiv](https://www.biorxiv.org/content/10.64898/2026.02.25.708091v1)
 
 We present **MAP**, a framework that integrates structured pharmacological knowledge into cellular response prediction. MAP learns mechanism-aware drug and gene representations by aligning molecular structures, protein targets, and mechanistic descriptions in a unified embedding space, and then conditions a perturbation predictor on these knowledge-informed representations.
 
