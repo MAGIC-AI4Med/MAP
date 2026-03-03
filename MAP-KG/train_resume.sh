@@ -1,0 +1,1 @@
+python -u train_resume.py > logs/train_resume.txt
