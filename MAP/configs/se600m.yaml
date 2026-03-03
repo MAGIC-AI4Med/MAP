@@ -1,0 +1,225 @@
+experiment:
+  name: "vci_pretrain_${loss.name}_${model.nhead}_${model.nlayers}"
+  local: "local"
+  compiled: false
+  deaware: false
+  profile:
+    enable_profiler: false
+    profile_steps: [10, 100]
+    max_steps: 110 # This is used only when profile is enabled
+  num_epochs: 100
+  num_nodes: 1
+  num_gpus_per_node: 1
+  port: 12400
+  val_check_interval: 1000 # Number of steps between tests
+  limit_val_batches: 100
+  ddp_timeout: 3600
+  debug: false 
+  checkpoint:
+    path: path/to/your/checkpoint
+    save_top_k: 4
+    monitor: trainer/train_loss
+    every_n_train_steps: 50
+
+wandb:
+  enable: False
+  project: "vci"
+
+embeddings:
+  current: esm2-cellxgene
+  esm2-cellxgene:
+    all_embeddings: /path/to/Homo_sapiens.GRCh38.gene_symbol_to_embedding_ESM2.pt
+    ds_emb_mapping: /large_storage/ctc/datasets/vci/training/gene_embidx_mapping.torch
+    valid_genes_masks: null
+    size: 5120
+    num: 19790
+
+  gene-kg-bert:
+    all_embeddings: path/to/KGemb.pt
+    valid_genes_masks: null
+    size: 1024
+    num: 16476
+
+  esm2-cellxgene-basecamp-tahoe:
+    all_embeddings: /large_storage/ctc/ML/data/cell/misc/Homo_sapiens.GRCh38.gene_symbol_to_embedding_ESM2.pt
+    ds_emb_mapping: /large_storage/ctc/datasets/updated1_gene_embidx_mapping_tahoe_basecamp_cellxgene.torch
+    valid_genes_masks: /large_storage/ctc/datasets/updated1_valid_gene_index_tahoe_basecamp_cellxgene.torch
+    size: 5120
+    num: 19790
+
+  esm2-cellxgene-tahoe:
+    all_embeddings: /large_storage/ctc/ML/data/cell/misc/Homo_sapiens.GRCh38.gene_symbol_to_embedding_ESM2.pt
+    ds_emb_mapping: /large_storage/ctc/datasets/updated1_gene_embidx_mapping_tahoe_basecamp_cellxgene.torch
+    valid_genes_masks: /large_storage/ctc/datasets/updated1_valid_gene_index_tahoe_basecamp_cellxgene.torch
+    size: 5120
+    num: 19790
+
+  evo2-scbasecamp:
+    all_embeddings: /large_storage/ctc/projects/vci/scbasecamp/Evo2/all_species_Evo2.torch
+    ds_emb_mapping: /large_storage/ctc/projects/vci/scbasecamp/Evo2/dataset_emb_idx_Evo2_fixed.torch
+    valid_genes_masks: /large_storage/ctc/projects/vci/scbasecamp/Evo2/valid_gene_index_Evo2.torch
+    size: 4096
+    num: 503178
+
+  esm2-scbasecamp:
+    all_embeddings: /large_storage/ctc/projects/vci/scbasecamp/ESM2/all_species_ESM2.torch
+    ds_emb_mapping: /large_storage/ctc/projects/vci/scbasecamp/ESM2/dataset_emb_idx_ESM2.torch
+    valid_genes_masks: /large_storage/ctc/projects/vci/scbasecamp/ESM2/valid_gene_index_ESM2.torch
+    size: 1280
+    num: 503178
+
+  esm2_3B-scbasecamp:
+    all_embeddings: /large_storage/ctc/projects/vci/scbasecamp/ESM2_3B/all_species.torch
+    ds_emb_mapping: /large_storage/ctc/projects/vci/scbasecamp/ESM2_3B/dataset_emb_idx.torch
+    valid_genes_masks: /large_storage/ctc/projects/vci/scbasecamp/ESM2_3B/valid_gene_index.torch
+    size: 2560
+    num: 503178
+  
+  esm2_3B-scbasecamp_cellxgene:
+    all_embeddings: /large_storage/ctc/projects/vci/scbasecamp/ESM2_3B/all_species.torch
+    ds_emb_mapping: /home/alishbaimran/scbasecamp/dataset_emb_idx_ESM2_copy.torch
+    valid_genes_masks: /home/alishbaimran/scbasecamp/valid_gene_index.torch
+    size: 2560
+    num: 503178
+
+validations:
+  diff_exp:
+    enable: true
+    eval_interval_multiple: 10
+    obs_pert_col: gene
+    obs_filter_label: non-targeting
+    top_k_rank: 200
+    method: null
+    dataset: /large_storage/ctc/datasets/cellxgene/processed/rpe1_top5000_variable.h5ad
+    dataset_name: rpe1_top5000_variable
+
+  perturbation:
+    enable: true
+    eval_interval_multiple: 10
+    pert_col: gene
+    ctrl_label: non-targeting
+    dataset: /large_storage/ctc/datasets/cellxgene/processed/rpe1_top5000_variable.h5ad
+    dataset_name: rpe1_top5000_variable
+
+dataset:
+  name: "vci"
+  seed: 42
+  num_train_workers: 16
+  num_val_workers: 4
+  current: scbasecamp-cellxgene-tahoe-filtered
+
+  cellxgene:
+    data_dir: /large_experiments/goodarzilab/mohsen/cellxgene/processed
+    ds_type: h5ad
+    filter: false
+    train: /scratch/ctc/ML/uce/h5ad_train_dataset.csv
+    val: /scratch/ctc/ML/uce/h5ad_val_dataset.csv
+    num_datasets: 1139
+
+  scbasecamp:
+    ds_type: filtered_h5ad
+    train: /home/alishbaimran/scbasecamp/scbasecamp_all.csv
+    val: /home/alishbaimran/scbasecamp/scbasecamp_all.csv
+    filter: true
+    filter_by_species: null
+
+  scbasecamp-cellxgene: 
+    ds_type: filtered_h5ad
+    train: /home/alishbaimran/scbasecamp/scBasecamp_cellxgene_all.csv
+    val: /home/alishbaimran/scbasecamp/scBasecamp_cellxgene_all.csv
+    filter: true
+    filter_by_species: null
+
+  scbasecamp-cellxgene-tahoe-filtered:
+    ds_type: filtered_h5ad
+    train: /large_storage/ctc/userspace/rohankshah/19kfilt_combined_train.csv
+    val: /large_storage/ctc/userspace/rohankshah/19kfilt_combined_val.csv
+    filter: true
+    filter_by_species: null
+    num_datasets: 14420
+
+  scbasecamp-cellxgene-tahoe:
+    ds_type: filtered_h5ad
+    train: /large_storage/ctc/datasets/scbasecamp_filtered_tahoe_cellxgene_train.csv
+    val: /large_storage/ctc/datasets/scbasecamp_filtered_tahoe_cellxgene_val.csv
+    filter: true
+    filter_by_species: null
+    num_datasets: 15700
+
+  cellxgene-tahoe:
+    ds_type: filtered_h5ad
+    train: /large_storage/ctc/datasets/tahoe_cellxgene_train.csv
+    val: /large_storage/ctc/datasets/tahoe_cellxgene_val.csv
+    filter: true
+    filter_by_species: null
+    num_datasets: 1139
+
+
+  tahoe:
+    ds_type: filtered_h5ad
+    train: /scratch/ctc/ML/uce/full_train_datasets.csv
+    val: /scratch/ctc/ML/uce/full_train_datasets.csv
+    filter: true
+    valid_genes_masks: null
+
+  tahoe-h5ad:
+    ds_type: filtered_h5ad
+    train: /scratch/ctc/ML/uce/h5ad_train_dataset_tahoe.csv
+    val: /scratch/ctc/ML/uce/h5ad_val_dataset_tahoe.csv
+    filter: true
+    valid_genes_masks: null
+
+  # this is a map for each dataset's columns mapping them to a global gene ordering
+  pad_length: 2048
+  pad_token_idx: 0
+  cls_token_idx: 3
+  chrom_token_right_idx: 2
+  P: 512
+  N: 512
+  S: 512
+  num_cells:  36238464 # TODO: Is this required
+  overrides:
+    rpe1_top5000_variable: /large_storage/ctc/datasets/vci/validation/rpe1_top5000_variable.h5ad
+
+tokenizer:
+  token_dim: 5120
+
+model:
+  name: 'vci'
+  batch_size: 128
+  emsize: 2048
+  d_hid: 2048
+  nhead: 16
+  nlayers: 8
+  dropout: 0.1
+  output_dim:  2048 # TODO: Is emsize different from this?
+  use_flash_attention: true
+  rda: true
+  counts: true
+  dataset_correction: true
+  ema: false
+  ema_decay: 0.999
+  ema_update_interval: 1000
+  sample_rda: false
+  batch_tabular_loss: false
+  num_downsample: 1
+  variable_masking: true
+
+task:
+  mask: 0.2
+
+optimizer:
+  max_lr: 1e-5
+  weight_decay: 0.01
+  start: 0.33
+  end: 1.0
+  max_grad_norm: 0.8
+  gradient_accumulation_steps: 8
+  reset_lr_on_restart: false # LR is reset to start value on restart
+  zclip: false
+
+loss:
+  name: "tabular" # mmd, cross_entropy, kl_divergence, mse, wasserstein, tabular
+  apply_normalization: False
+  kernel: "energy"
+  uniformity: False
