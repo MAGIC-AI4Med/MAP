@@ -7,3 +7,31 @@ The official codes for "MAP: A Knowledge-driven Framework for Predicting Single-
 We present **MAP**, a framework that integrates structured pharmacological knowledge into cellular response prediction. MAP learns mechanism-aware drug and gene representations by aligning molecular structures, protein targets, and mechanistic descriptions in a unified embedding space, and then conditions a perturbation predictor on these knowledge-informed representations.
 
 <img width="1261" height="1288" alt="57ecdf1f0b06e3bb4835b71b473b1ff4" src="https://github.com/user-attachments/assets/043387ba-0377-4475-849d-d9a0d65e74eb" />
+
+## Setup
+
+### Environment
+We provide `requirements.txt` as a reference, the versions of packages are not compulsory.
+
+### Data Preparation
+
+* For knowledge encoders pre-training, we provide preprocessed knowledge graph data files at [Huggingface](https://huggingface.co/datasets/RainGate/MAP-KG). Download and put them under `MAP-KG/data/selected_csvs/`.
+* For MAP training, download Tahoe-100M, OP3 or SciPlex3 from official sites, and go through all scripts under `preprocess/` by alphabetical order.
+* We suggest you prepare at least 4 TB storage for the above three datasets.
+
+### To pre-train knowledge encoders
+After environment setup and data preparation, you should first check all the files, and replace all 'path/to/sth' into your own paths, then run:
+```
+MAP-KG/train_resume.sh
+```
+Training logs and checkpoints will be placed under `MAP-KG/logs` and `MAP-KG/checkpoints`.
+
+### To train MAP
+After environment setup and data preparation, you should first check all the files, and replace all 'path/to/sth' into your own paths, then run:
+```
+MAP/train.sh
+```
+Training logs and checkpoints will be placed under `MAP/logs` and `MAP/checkpoints`.
+
+## Acknowledgement
+We sincerely thank all the contributors who developed relevant codes in our repository.
