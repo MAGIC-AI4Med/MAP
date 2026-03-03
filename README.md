@@ -33,5 +33,14 @@ MAP/train.sh
 ```
 Training logs and checkpoints will be placed under `MAP/logs` and `MAP/checkpoints`.
 
-## Acknowledgement
-We sincerely thank all the contributors who developed relevant codes in our repository.
+## Citation
+```
+@article{feng2026map,
+  title={MAP: A Knowledge-driven Framework for Predicting Single-cell Responses for Unprofiled Drugs},
+  author={Feng, Jinghao and Zhao, Ziheng and Zhang, Xiaoman and Liu, Mingfei and Chen, Jingyi and Quan, Xingran and Zhang, Jian and Wang, Yanfeng and Zhang, Ya and Xie, Weidi},
+  journal={bioRxiv},
+  pages={2026--02},
+  year={2026},
+  publisher={Cold Spring Harbor Laboratory}
+}
+```
