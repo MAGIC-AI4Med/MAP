@@ -11,7 +11,7 @@ We present **MAP**, a framework that integrates structured pharmacological knowl
 ## Setup
 
 ### Environment
-We provide `requirements.txt` as a reference, the versions of packages are not compulsory.
+We provide `requirements.txt` as a reference, the versions of packages are not compulsory. The typical installation time for setting up the environment is a few minutes.
 
 ### Data Preparation
 
@@ -19,6 +19,7 @@ We provide `requirements.txt` as a reference, the versions of packages are not c
 * For MAP training, download Tahoe-100M, OP3 or SciPlex3 from official sites, and go through all scripts under `preprocess/` by alphabetical order.
 * We suggest you prepare at least 4 TB storage for the above three datasets.
 
+## Implementation
 ### To pre-train knowledge encoders
 After environment setup and data preparation, you should first check all the files, and replace all 'path/to/sth' into your own paths, then run:
 ```
@@ -32,6 +33,16 @@ After environment setup and data preparation, you should first check all the fil
 MAP/train.sh
 ```
 Training logs and checkpoints will be placed under `MAP/logs` and `MAP/checkpoints`.
+
+### Demo
+We provide a demo to help you understand the expected actions of the model. Run it like this:
+```                                                                        
+python demo.py
+  --ckpt [ckpt path]
+  --cell_line CVCL_0023
+  --drug_smiles "CC1=NC=C(C(=C1O)CO"
+  --drug_conc 0.5 --output_dir ./demo_output
+```
 
 ## Citation
 ```
