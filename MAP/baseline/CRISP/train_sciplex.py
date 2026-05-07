@@ -295,13 +295,13 @@ if __name__ == "__main__":
     # ✅ 示例配置：把路径换成你 Sciplex 的实际路径即可
     cfg = CRISPMultiCellConfig(
         # Sciplex paths
-        h5ad_path="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_sciplex/raw/sciplex3_pp_hvgenes_scFM_resplit_filtered_ESM2.h5ad",
-        shards_dir="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/ours_3/shards/sciplex",
-        hvg_root="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_sciplex/preprocessed/sciplex3_hvg_by_celltype_seurat_top2000",
-        split_dir="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_sciplex/split",
+        h5ad_path="external_dataset_sciplex/raw/sciplex3_pp_hvgenes_scFM_resplit_filtered_ESM2.h5ad",
+        shards_dir="shards/sciplex",
+        hvg_root="external_dataset_sciplex/preprocessed/sciplex3_hvg_by_celltype_seurat_top2000",
+        split_dir="external_dataset_sciplex/split",
 
         # smiles embedding
-        drug_emb_pt_path="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/baselines/CRISP/data/drug_embeddings/rdkit2d_smiles_embeddings_sciplex.pt",
+        drug_emb_pt_path="baselines/CRISP/data/drug_embeddings/rdkit2d_smiles_embeddings_sciplex.pt",
 
         # Sciplex cell types（示例；请替换为你实际想训练的 cell_type 列表）
         cell_types=["A549", "K562", "MCF7"],
