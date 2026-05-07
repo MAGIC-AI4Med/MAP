@@ -11,7 +11,13 @@ We present **MAP**, a framework that integrates structured pharmacological knowl
 ## Setup
 
 ### Environment
-We provide `requirements.txt` as a reference, the versions of packages are not compulsory. The typical installation time for setting up the environment is a few minutes.
+Core libraries required include:
+
+`Python 3.8`
+`Torch 2.1.2`
+`scanpy 1.9.8`
+
+For complete environment requirements, we also provide `requirements.txt` as a reference, the versions of packages are not compulsory. You can run `pip install -r requirements.txt` to quick install the conda environment. The typical installation time for setting up the environment is a few minutes.
 
 ### Data Preparation
 
@@ -43,6 +49,9 @@ python demo.py
   --drug_smiles "CC1=NC=C(C(=C1O)CO"
   --drug_conc 0.5 --output_dir ./demo_output
 ```
+
+### Pre-trained model weights
+The pretrained model weights (multi-modal knowledge encoders and perturbation prediction model) can be found in [Google Drive](https://drive.google.com/drive/folders/1cV0ZTk92PguKS2nyii6dLV0IfqoSDHsQ?usp=drive_link).
 
 ## Citation
 ```
