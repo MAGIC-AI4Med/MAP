@@ -10,6 +10,7 @@ import torch.nn as nn
 from eval_utils import (
     compute_discrimination_score_global,
     compute_pearson_scores,
+    get_significant_deg_mask,
 )
 
 
@@ -64,11 +65,12 @@ def evaluate_model_multicell(
     hvg_weight,
     device,
     de_topk=50,
+    de_pvalue_threshold=0.05,
     verbose=True,
 ):
     """
     多细胞系评估函数（适配新框架：SE模型在线编码）
-    
+
     Args:
         model: PerturbationEncoderLoRASE模型（包含可训练的SE）
         test_loader: DataLoader（返回SE模型输入：gene_ids和expressions）
@@ -77,6 +79,7 @@ def evaluate_model_multicell(
         hvg_weight: HVG损失权重
         device: 计算设备
         de_topk: Top-K DE基因数量
+        de_pvalue_threshold: DEG筛选的统计检验p值阈值
         verbose: 是否打印详细信息
     
     Returns:
@@ -145,9 +148,9 @@ def evaluate_model_multicell(
         true_hvg_mean = hvgs.mean(dim=1).float().cpu().numpy()  # [B, G]
         control_hvg_mean = batch_data["control_hvg_vectors"].to(device).mean(dim=1).float().cpu().numpy()  # [B, G]
 
-        # print('fwfw:', pred_hvg_mean)
-        # print('wfwf:', true_hvg_mean)
-        # print('gege:', control_hvg_mean)
+        # cell-level数据用于统计检验
+        control_hvg_cell = batch_data["control_hvg_vectors"].numpy()  # [B, S_ctrl, G]
+        perturb_hvg_cell = hvgs.numpy()  # [B, S_pert, G]
 
         # pseudobulk Δ
         delta_true = true_hvg_mean - control_hvg_mean   # [B, G]
@@ -193,8 +196,22 @@ def evaluate_model_multicell(
             if k <= 0:
                 continue
 
+            # 统计检验得到显著基因mask
+            sig_mask = get_significant_deg_mask(
+                control_hvg_cell[i], perturb_hvg_cell[i], de_pvalue_threshold
+            )
+            num_sig = int(sig_mask.sum())
+
             abs_dt = np.abs(dt)
-            top_idx = np.argsort(-abs_dt)[:k]
+
+            if num_sig >= de_topk:
+                # 显著基因足够，只在显著基因内按logFC排序选top k
+                abs_dt_sig = abs_dt.copy()
+                abs_dt_sig[~sig_mask] = -np.inf  # 非显著基因排到最后
+                top_idx = np.argsort(-abs_dt_sig)[:k]
+            else:
+                # 显著基因不足，回退到原逻辑：所有基因按logFC排序
+                top_idx = np.argsort(-abs_dt)[:k]
 
             dt_top = dt[top_idx]        # [k]
             dp_top = dp[top_idx]        # [k]
