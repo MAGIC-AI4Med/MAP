@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 from omegaconf import OmegaConf
 
 from data.ds_combosciplex_lora_se import ComboSciplexPerturbDatasetSE
+from eval_utils import get_significant_deg_mask
 
 
 def load_smiles_to_name():
@@ -39,6 +40,7 @@ def evaluate_combosciplex_v2(
     hvg_weight,
     device,
     de_topk=50,
+    de_pvalue_threshold=0.05,
     verbose=True,
 ):
     """
@@ -103,9 +105,28 @@ def evaluate_combosciplex_v2(
         hvg_dir_acc = (np.sign(delta_true) == np.sign(delta_pred)).mean()
         hvg_dir_accs.append(hvg_dir_acc)
 
+        # 获取cell-level数据做统计检验
+        control_hvg_np = batch["control_hvg_vectors"][0].numpy()  # [S_ctrl, G]
+        perturb_hvg_np = batch["perturb_hvg_vectors"][0].numpy()  # [S_pert, G]
+
+        # 统计检验得到显著基因mask
+        sig_mask = get_significant_deg_mask(
+            control_hvg_np, perturb_hvg_np, de_pvalue_threshold
+        )
+        num_sig = int(sig_mask.sum())
+
         # DE 基因位置（用于Wasserstein DE）
         abs_dt = np.abs(delta_true)
-        top_idx = np.argsort(-abs_dt)[:de_topk]
+
+        if num_sig >= de_topk:
+            # 显著基因足够，只在显著基因内按logFC排序选top k
+            abs_dt_sig = abs_dt.copy()
+            abs_dt_sig[~sig_mask] = -np.inf  # 非显著基因排到最后
+            top_idx = np.argsort(-abs_dt_sig)[:de_topk]
+        else:
+            # 显著基因不足，回退到原逻辑：所有基因按logFC排序
+            top_idx = np.argsort(-abs_dt)[:de_topk]
+
         all_de_indices.append(top_idx)
 
         # DE 方向准确率
@@ -179,6 +200,8 @@ def main():
     parser.add_argument("--checkpoint", type=str, default=None, help="如果不指定，默认用 checkpoints/{exp_name}/best.pt")
     parser.add_argument("--set_size", type=int, default=24)
     parser.add_argument("--de_topk", type=int, default=50)
+    parser.add_argument("--de_pvalue_threshold", type=float, default=0.05,
+                        help="p-value threshold for statistical test in DEG selection")
     parser.add_argument("--num_workers", type=int, default=4)
     args = parser.parse_args()
 
@@ -239,6 +262,7 @@ def main():
         metrics = evaluate_combosciplex_v2(
             model, ds, loss_fn_emb, loss_fn_hvg, 0.1,
             device, de_topk=args.de_topk,
+            de_pvalue_threshold=args.de_pvalue_threshold,
             verbose=True
         )
         all_results[split] = metrics
