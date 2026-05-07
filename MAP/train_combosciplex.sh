@@ -25,8 +25,6 @@ echo "Experiment name: $EXP_NAME"
 echo "================================================"
 
 # DDP training
-srun -p medai_p --gres=gpu:1 --cpus-per-task=16 --quotatype=reserved \
-bash -c "source ~/anaconda3/etc/profile.d/conda.sh && conda activate cxr && \
 torchrun --nproc_per_node=1 --master_port=$MASTER_PORT train_combosciplex.py \
     --exp_name "$EXP_NAME" \
     --scheme "$SCHEME" \
