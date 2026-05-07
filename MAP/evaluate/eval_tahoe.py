@@ -18,6 +18,7 @@ from torch.utils.data import DataLoader
 
 from data.ds_multi_cell_lora_se import TahoePerturbDatasetSE
 from model.model import MAPmodel
+from .eval_utils import get_significant_deg_mask
 from eval_utils import compute_discrimination_score_global, compute_pearson_scores
 
 
@@ -35,6 +36,7 @@ def evaluate_model_full(
     hvg_weight,
     device,
     de_topk=50,
+    de_pvalue_threshold=0.05,
     num_samples_per_comb=1,
     verbose=True,
 ):
@@ -62,6 +64,7 @@ def evaluate_model_full(
         hvg_weight: HVG损失权重
         device: 计算设备
         de_topk: Top-K DE基因数量
+        de_pvalue_threshold: DEG筛选的统计检验p值阈值
         num_samples_per_comb: 每个cell line-perturbation组合采样多少次（用于Wasserstein）
         verbose: 是否打印详细信息
 
@@ -173,14 +176,37 @@ def evaluate_model_full(
 
                 # top-k DE 处理
                 if G > 0 and de_topk > 0:
+                    # 获取cell-level数据做统计检验
+                    control_hvg_np = batch["control_hvg_vectors"].numpy()  # [S_ctrl, G]
+                    perturb_hvg_np = batch["perturb_hvg_vectors"].numpy()  # [S_pert, G]
+
+                    # 统计检验得到显著基因mask
+                    sig_mask = get_significant_deg_mask(
+                        control_hvg_np, perturb_hvg_np, de_pvalue_threshold
+                    )
+
+                    num_sig = int(sig_mask.sum())
                     k = min(de_topk, G)
 
+                    # 计算所有基因的logFC绝对值
                     abs_dt = np.abs(delta_true)
-                    top_idx_true = np.argsort(-abs_dt)[:k]
-                    cl_data['all_de_indices'].append(top_idx_true)
-
                     abs_dp = np.abs(delta_pred)
-                    top_idx_pred = np.argsort(-abs_dp)[:k]
+
+                    if num_sig >= de_topk:
+                        # 显著基因足够，只在显著基因内按logFC排序选top k
+                        abs_dt_sig = abs_dt.copy()
+                        abs_dt_sig[~sig_mask] = -np.inf  # 非显著基因排到最后
+                        top_idx_true = np.argsort(-abs_dt_sig)[:k]
+
+                        abs_dp_sig = abs_dp.copy()
+                        abs_dp_sig[~sig_mask] = -np.inf
+                        top_idx_pred = np.argsort(-abs_dp_sig)[:k]
+                    else:
+                        # 显著基因不足，回退到原逻辑：所有基因按logFC排序
+                        top_idx_true = np.argsort(-abs_dt)[:k]
+                        top_idx_pred = np.argsort(-abs_dp)[:k]
+
+                    cl_data['all_de_indices'].append(top_idx_true)
 
                     # DE overlap
                     overlap = len(set(top_idx_true) & set(top_idx_pred)) / k
@@ -472,6 +498,8 @@ def parse_args():
     parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--hvg_loss_weight", type=float, default=0.1)
     parser.add_argument("--de_topk", type=int, default=50)
+    parser.add_argument("--de_pvalue_threshold", type=float, default=0.05,
+                        help="p-value threshold for statistical test in DEG selection")
 
     # Wasserstein specific arguments
     parser.add_argument("--num_samples_per_comb", type=int, default=1,
@@ -557,6 +585,7 @@ def main():
         model, test_loader, loss_fn_emb, loss_fn_hvg,
         args.hvg_loss_weight, device,
         de_topk=args.de_topk,
+        de_pvalue_threshold=args.de_pvalue_threshold,
         num_samples_per_comb=args.num_samples_per_comb,
         verbose=True
     )
