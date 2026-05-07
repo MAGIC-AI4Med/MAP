@@ -269,8 +269,8 @@ class CRISPMultiCellTrainer:
 
 if __name__ == "__main__":
     cfg = CRISPMultiCellConfig(
-        base_dir="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/ours_3/preprocessed",
-        drug_emb_pt_path="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/baselines/CRISP_ours/rdkit2d_smiles_embeddings.pt",
+        base_dir="preprocessed",
+        drug_emb_pt_path="path/to/rdkit2d_smiles_embeddings.pt",
         cell_lines=['CVCL_0023', 'CVCL_0480', 'CVCL_0069', 'CVCL_0131', 'CVCL_1098', 'CVCL_1056'],
         UC=True,
         
