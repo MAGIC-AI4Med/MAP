@@ -1,0 +1,53 @@
+model:
+  ATTN:
+    n_heads: 8
+    attention_probs_dropout_prob: 0.1
+    hidden_dropout_prob: 0.1
+    cell_input_hidden_dropout_prob: 0.1
+    drug_input_hidden_dropout_prob: 0.1
+    topk_cell: 128
+    topk_drug: 32
+    sparse_flag: False
+    hidden_size: 256
+    trt_structure: CA+SA+SA+CA
+    ctl_structure: SA+SA+SA+SA
+    ppi_gene_vector_path: processed_data/PPI_gene_vector_128d.npy
+  HG:
+    node_input_dim: 256        # output dim from HG pre-training
+    conv_layers: 3             # matches our HG pre-training num_layers=3
+    hg_path: scripts/HG_data/experiment/   # where phase1 embeddings are saved
+    drug_hg_pretrained_embed_path: scripts/HG_data/experiment/sciplex/phase1_drug_embeddings.npy
+
+dataset:
+  n_bins: 10
+  gene_num: 1880             # total genes from our HG pre-training on Sciplex
+  atom_num: 24
+  max_atom_size: 188           # max atoms across Sciplex drugs
+  max_value: 10.0
+  min_value: 0.0
+
+  sciplex:
+    num_pert_dose: 10          # use same 10-dose binning as XPert default
+    num_pert_time: 1            # Sciplex has single time point
+    num_cell_id: 3              # Sciplex has 3 cell lines
+    num_tissue_id: 1            # single tissue type
+
+  drug_unimol_path: HG_data/sciplex_all_drugs_unimol_188.npy
+  drug_smi_path: HG_data/sciplex_drugs_smiles_188.json
+
+train:
+  train_lr: 0.004
+  weight_decay: 0.00001
+  batch_size: 16
+  num_epochs: 2500
+  init_epoch: 70
+  loss_weight: [0.2, 0.003, 0.2, 1]
+  patience: 50
+  bandwidth: 0.3
+
+finetune:
+  finetune_params: all
+  exclude_keys: []
+  init_epoch: 0
+  finetune_lr: 0.001
+  weight_decay: 0.00001
