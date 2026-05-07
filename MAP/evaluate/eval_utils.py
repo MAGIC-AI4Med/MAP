@@ -1,6 +1,34 @@
 import numpy as np
 from scipy.spatial.distance import cdist
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, ttest_ind
+
+
+def get_significant_deg_mask(control_hvg: np.ndarray,
+                              perturb_hvg: np.ndarray,
+                              pvalue_threshold: float = 0.05) -> np.ndarray:
+    """
+    对每个HVG做统计检验，返回显著基因的mask
+
+    Args:
+        control_hvg: shape [S_ctrl, G]，control组cell-level HVG表达
+        perturb_hvg: shape [S_pert, G]，perturbed组cell-level HVG表达
+        pvalue_threshold: p值阈值
+
+    Returns:
+        mask: shape [G]，True表示该基因统计显著
+    """
+    G = control_hvg.shape[1]
+    p_values = np.zeros(G)
+
+    for g in range(G):
+        ctrl_vals = control_hvg[:, g]
+        pert_vals = perturb_hvg[:, g]
+
+        # Welch's t-test (不假设方差相等)
+        _, p_val = ttest_ind(ctrl_vals, pert_vals, equal_var=False, nan_policy='omit')
+        p_values[g] = p_val
+
+    return p_values < pvalue_threshold
 
 def compute_batch_pearson_delta_for_train(pred_hvg_mean, true_hvg_mean, control_hvg_mean):
     pred_hvg_np = pred_hvg_mean.detach().cpu().numpy()
