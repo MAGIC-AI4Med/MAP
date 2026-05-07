@@ -91,10 +91,10 @@ class NIPSPerturbDataset(Dataset):
         self,
         cell_types,
         split="train",  # 'train' or 'test'
-        h5ad_path="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_nips/raw/nips_pp_scFM_resplit.filtered_ESM2.h5ad",
-        shards_dir="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_nips/SE_emb/nips",
-        hvg_root="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_nips/preprocessed/nips_hvg_by_celltype_seurat_top2000",
-        split_dir="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_nips/split",
+        h5ad_path="external_dataset_nips/raw/nips_pp_scFM_resplit.filtered_ESM2.h5ad",
+        shards_dir="external_dataset_nips/SE_emb/nips",
+        hvg_root="external_dataset_nips/preprocessed/nips_hvg_by_celltype_seurat_top2000",
+        split_dir="external_dataset_nips/split",
         set_size=32,
         UC = False,
         is_train=True,
@@ -737,10 +737,10 @@ def build_crisp_dataloader(
     sequential: bool = False,
     seed: int = 42,
     # --- NIPS dataset paths ---
-    h5ad_path: str = "/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_nips/raw/nips_pp_scFM_resplit.filtered_ESM2.h5ad",
-    shards_dir: str = "/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_nips/SE_emb/nips",
-    hvg_root: str = "/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_nips/preprocessed/nips_hvg_by_celltype_seurat_top2000",
-    split_dir: str = "/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/external_dataset_nips/split",
+    h5ad_path: str = "external_dataset_nips/raw/nips_pp_scFM_resplit.filtered_ESM2.h5ad",
+    shards_dir: str = "external_dataset_nips/SE_emb/nips",
+    hvg_root: str = "external_dataset_nips/preprocessed/nips_hvg_by_celltype_seurat_top2000",
+    split_dir: str = "external_dataset_nips/split",
 ) -> Tuple[DataLoader, int, int, int, Dict[str, int]]:
     """
     构建 NIPS -> CRISP 训练/评估 DataLoader（接口对齐 Tahoe 版本）
