@@ -29,7 +29,7 @@ class TahoePerturbDataset(Dataset):
         self,
         cell_lines: List[str],
         split: str = 'train',
-        base_dir: str = "/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/ours_3/preprocessed",
+        base_dir: str = "preprocessed",
         hvg_setting: str = "seurat_v3",
         hvg_not_yet_normed: bool = True,
         set_size: int = 128,
