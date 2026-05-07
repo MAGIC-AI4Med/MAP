@@ -11,7 +11,7 @@ from rdkit import Chem
 
 class esm2_mapping():
     def __init__(self,
-            dict_path="/mnt/petrelfs/fengjinghao/CRAFT/VirtualCell/base/other_data/Homo_sapiens.GRCh38.gene_symbol_to_embedding_ESM2.pt",
+            dict_path="/path/to/Homo_sapiens.GRCh38.gene_symbol_to_embedding_ESM2.pt",
         ):
         self.esm_dict = torch.load(dict_path)
 
