@@ -25,6 +25,12 @@ For complete environment requirements, we also provide `requirements.txt` as a r
 * For MAP training, download Tahoe-100M, OP3 or SciPlex3 from official sites, and go through all scripts under `preprocess/` by alphabetical order.
 * We suggest you prepare at least 4 TB storage for the above three datasets.
 
+### Raw Data Source
+* Tahoe-100M: https://huggingface.co/datasets/tahoebio/Tahoe-100M
+* OP3: https://www.kaggle.com/competitions/open-problems-single-cell-perturbations/data
+* SciPlex3: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4150378
+* Combosciplex: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE206741
+
 ## Implementation
 ### To pre-train knowledge encoders
 After environment setup and data preparation, you should first check all the files, and replace all 'path/to/sth' into your own paths, then run:
