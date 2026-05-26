@@ -55,6 +55,7 @@ python demo.py
   --drug_smiles "CC1=NC=C(C(=C1O)CO"
   --drug_conc 0.5 --output_dir ./demo_output
 ```
+The typical time for running this demo is within few minutes.
 
 ### Pre-trained model weights
 The pretrained model weights (multi-modal knowledge encoders and perturbation prediction model) can be found in [Google Drive](https://drive.google.com/drive/folders/1cV0ZTk92PguKS2nyii6dLV0IfqoSDHsQ?usp=drive_link).
