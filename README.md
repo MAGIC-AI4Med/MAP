@@ -47,7 +47,7 @@ MAP/train.sh
 Training logs and checkpoints will be placed under `MAP/logs` and `MAP/checkpoints`.
 
 ### Demo
-We provide a demo to help you understand the expected actions of the model. Run it like this:
+We provide a demo to help you understand the expected actions of the model. The demo loads one pseudo-bulk and run the model forwarding to generate response prediction. Run it like this:
 ```                                                                        
 python demo.py
   --ckpt [ckpt path]
